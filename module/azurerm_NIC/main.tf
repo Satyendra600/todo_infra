@@ -1,0 +1,21 @@
+data "azurerm_subnet" "subnet_satya" {
+  name                 = var.subnet_name
+  resource_group_name  = var.rg_name
+  virtual_network_name = var.vnet_name
+}
+data "azurerm_public_ip" "pip" {
+  name = var.pip_name
+  resource_group_name = var.rg_name
+}
+resource "azurerm_network_interface" "nic" {
+  name                = var.nic_name
+  location            = var.location
+  resource_group_name = var.rg_name
+
+  ip_configuration {
+    name                          = var.pip_name
+    subnet_id                     = data.azurerm_subnet.subnet_satya.id
+    private_ip_address_allocation = "Dynamic"
+    public_ip_address_id = data.azurerm_public_ip.pip.id
+  }
+}
